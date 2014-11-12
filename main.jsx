@@ -30,22 +30,30 @@ var Workplace = React.createClass({
     this.setState({links: this.state.links.concat([[nodo1,nodo2]])});
   },
   linkCallback: function(element){
-    this.setState({selected: element});
-    element.setState({selected:true});
     var selectedList = this.selectedList;
     selectedList.push(element);
     if (selectedList.length == 3){
       selectedList.shift();
     };
-    if (selectedList.length == 2){
-      if (selectedList[0] !== undefined && selectedList[1]!== undefined){
-        this.createLink(selectedList[0], selectedList[1]);
-        this.selectedList = [];
-      }
+    if (selectedList.length == 2 &&
+        (selectedList[0] !== undefined && selectedList[1]!== undefined)){
+          this.createLink(selectedList[0], selectedList[1]);
+          this.selectedList = [];
+
+          this.state.selected.setState({selected:false});
+    }
+    else{
+      this.defaultCallback(element);
     };
   },
   defaultCallback: function(element){
-    this.setState({selected: element});
+    this.setState({
+      selected: element,
+      mouseDown: true,
+    });
+    if (this.state.selected){
+      this.state.selected.setState({selected:false});
+    };
     element.setState({selected: true});
   },
   componentWillMount: function(){
@@ -80,14 +88,20 @@ var Workplace = React.createClass({
     }
   },
   onMouseDownHandler: function(event){
-    this.setState({mouseDown: true});
-  },
-  onMouseUpHandler: function(event){
-    this.setState({mouseDown: false});
     if (this.state.selected){
       this.state.selected.setState({selected:false});
     };
-    this.setState({selected: undefined});
+    this.setState({
+      selected: undefined,
+      mouseDown: true
+    });
+  },
+  onMouseUpHandler: function(event){
+    this.setState({mouseDown: false});
+  },
+  moveOnClick: function(event){
+    // No seleccionamos ningun elemento
+    this.setState({selected:undefined});
   },
   setClientOrigin: function(){
     var svg = this.refs.svg_element.getDOMNode();
@@ -111,6 +125,9 @@ var Workplace = React.createClass({
     });
     var onClick;
     switch(this.state.clickMode){
+        case "move":
+        onClick = this.moveOnClick;
+        break;
         case "create":
         onClick = this.createOnClick;
         break;
@@ -164,6 +181,7 @@ var Nodo = React.createClass({
     };
   },
   onMouseDownHandler: function(event){
+    event.stopPropagation();
     this.props.selectedCallback(this);
     this.moveToFront();
   },
@@ -171,12 +189,17 @@ var Nodo = React.createClass({
     var DOMNode = this.refs.svgGroup.getDOMNode();
     DOMNode.ownerSVGElement.appendChild(DOMNode);
   },
+  onClickHandler: function(event){
+    //Evitamos que el evento se propague al WorkPlace
+    event.stopPropagation();
+  },
   render: function(){
     var selected = this.state.selected;
     return(
       <g
         ref="svgGroup"
         className="nodo"
+        onClick={this.onClickHandler}
         onMouseDown={this.onMouseDownHandler}>
         <circle r={this.props.radio}
                 fill="white"

@@ -5,10 +5,10 @@ var Workplace = React.createClass({
     return{
       nodo: {
         clickable: true,
-        selectedCallback: this.selectedCallback,
+        selectedCallback: this.defaultCallback,
       },
-      clickable: false,
-      clickDown: false,
+      clickMode: "move", // 0: move, 1: create, 2: link
+      links: [],
     };
   },
   creaNodo: function(props_nodo){
@@ -18,25 +18,42 @@ var Workplace = React.createClass({
     this.setState({children: newChildrenState});
     return new_nodo;
   },
-  creaNodoOnClick: function(event){
+  createOnClick: function(event){
     this.creaNodo({
       position: {
         x: event.clientX - this.clientOrigin.x,
         y: event.clientY - this.clientOrigin.y,
       }
     });
-    console.log("Crea Nodo!", event.clientX, event.clientY);
   },
-  selectedCallback: function(element){
+  createLink: function(nodo1, nodo2){
+    this.setState({links: this.state.links.concat([[nodo1,nodo2]])});
+  },
+  linkCallback: function(element){
+    this.setState({selected: element});
+    element.setState({selected:true});
+    var selectedList = this.selectedList;
+    selectedList.push(element);
+    if (selectedList.length == 3){
+      selectedList.shift();
+    };
+    if (selectedList.length == 2){
+      if (selectedList[0] !== undefined && selectedList[1]!== undefined){
+        this.createLink(selectedList[0], selectedList[1]);
+        this.selectedList = [];
+      }
+    };
+  },
+  defaultCallback: function(element){
     this.setState({selected: element});
     element.setState({selected: true});
   },
   componentWillMount: function(){
     var i = 0;
-    var childrenState
+    var childrenState;
     if (Array.isArray(this.props.children)){
       childrenState = this.props.children.map( function(child){
-        return child.props.key = i++;
+        return React.addons.clonewithProps(child,{key: i++});
       });
     }
     else if(this.props.children === undefined){
@@ -50,17 +67,8 @@ var Workplace = React.createClass({
       children: childrenState,
     });
   },
-  toogleClick: function(){
-    var oldClickable = this.state.clickable;
-    var oldNodoProps = this.state.nodo;
-    this.setState({
-      nodo: React.addons.update(this.state.nodo, {$merge: {clickable: oldClickable}}),
-      clickable: (! oldClickable),
-    }
-    );
-  },
   onMouseMoveHandler: function(event){
-    if (this.state.mouseDown && this.state.selected){
+    if (this.state.mouseDown && this.state.clickMode==="move" && this.state.selected){
       var element = this.state.selected;
       element.setState({
         position: {
@@ -68,12 +76,13 @@ var Workplace = React.createClass({
           y: event.clientY - this.clientOrigin.y,
         },
       });
+      this.forceUpdate();
     }
   },
-  onMouseDownHandler: function(){
+  onMouseDownHandler: function(event){
     this.setState({mouseDown: true});
   },
-  onMouseUpHandler: function(){
+  onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
     if (this.state.selected){
       this.state.selected.setState({selected:false});
@@ -85,21 +94,49 @@ var Workplace = React.createClass({
     var rect = svg.getClientRects()[0];
     this.clientOrigin = {x:rect.left, y: rect.top};
   },
+  menuCallback: function(event){
+    this.setState({clickMode: event.target.value});
+      if (event.target.value === "link"){
+        this.selectedList = [];
+        this.setState({nodo: {selectedCallback: this. linkCallback}});
+      }
+    else{
+      this.setState({nodo:{selectedCallback: this. defaultCallback}});
+    };
+  },
   render: function(){
-    var nodo_props = this.state.nodo
+    var nodo_props = this.state.nodo;
     var children = this.state.children.map(function(child){
       return React.addons.cloneWithProps(child, nodo_props);
     });
+    var onClick;
+    switch(this.state.clickMode){
+        case "create":
+        onClick = this.createOnClick;
+        break;
+        case "link":
+        onClick = undefined;
+    };
+    var links = this.state.links;
+    var linksElements = links.map(function(item){
+      return <Link pos1={item[0].state.position}  pos2={item[1].state.position}/>;
+    });
+
     return(
       <div>
-        <button onClick={this.toogleClick}>Toogle</button>
+        <select value={this.state.clickMode} onChange={this.menuCallback}>
+          <option value="move">Mover nodo</option>
+          <option value="create">Crear nodo</option>
+          <option value="link">Vincular nodos</option>
+        </select>
         <svg width="100%" height="100%"
              ref="svg_element"
              onMouseDown={this.onMouseDownHandler}
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}
-             onClick={this.state.clickable?this.creaNodoOnClick:undefined}>
+             onClick={onClick}>
           {children}
+          {linksElements}
         </svg>
       </div>
     );
@@ -128,11 +165,17 @@ var Nodo = React.createClass({
   },
   onMouseDownHandler: function(event){
     this.props.selectedCallback(this);
+    this.moveToFront();
+  },
+  moveToFront: function(){
+    var DOMNode = this.refs.svgGroup.getDOMNode();
+    DOMNode.ownerSVGElement.appendChild(DOMNode);
   },
   render: function(){
     var selected = this.state.selected;
     return(
       <g
+        ref="svgGroup"
         className="nodo"
         onMouseDown={this.onMouseDownHandler}>
         <circle r={this.props.radio}
@@ -144,12 +187,25 @@ var Nodo = React.createClass({
       </g>
     );
   },
-
 });
 
-var Link = React.Createclass({
-
-})
+var Link = React.createClass({
+  render: function(){
+    var pos1 = this.props.pos1;
+    var pos2 = this.props.pos2;
+    return(
+      <line x1={pos1.x} y1={pos1.y}
+            x2={pos2.x} y2={pos2.y}
+            ref="line"
+            stroke="black"
+            strokeWidth={2}/>
+    );
+  },
+  componentDidMount: function(){
+    var lineNode = this.refs.line.getDOMNode();
+    lineNode.ownerSVGElement.insertBefore(lineNode, lineNode.ownerSVGElement.firstChild);
+  },
+});
 
 React.render(<Workplace ><Nodo position={{x:100, y:100}}/></Workplace>,
              document.getElementById("container"));

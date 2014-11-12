@@ -11,6 +11,22 @@ var Workplace = React.createClass({
       links: [],
     };
   },
+  onKeyPressHandler: function(event){
+    var mode = "";
+    switch(event.key){
+        case 'c':
+        mode = "create";
+        break;
+        case 'm':
+        mode = "move";
+        break;
+        case 'l':
+        mode = "link";
+    };
+    if (mode){
+      this.menuCallback({target: {value: mode}});
+    };
+  },
   creaNodo: function(props_nodo){
     var new_nodo = <Nodo {... props_nodo}
                          key={this.state.children.length}/>;
@@ -148,6 +164,8 @@ var Workplace = React.createClass({
         </select>
         <svg width="100%" height="100%"
              ref="svg_element"
+             tabIndex={1}
+             onKeyPress={this.onKeyPressHandler}
              onMouseDown={this.onMouseDownHandler}
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}

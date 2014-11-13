@@ -195,6 +195,7 @@ var Nodo = React.createClass({
   getDefaultProps: function(){
     return{
       radio: 20,
+      radioOnMouseOver: 22,
       draggable: true,
     };
   },
@@ -206,6 +207,7 @@ var Nodo = React.createClass({
         y: this.props.position.y,
       },
       selected: false,
+      mouseOver: false,
     };
   },
   onMouseDownHandler: function(event){
@@ -221,17 +223,26 @@ var Nodo = React.createClass({
     //Evitamos que el evento se propague al WorkPlace
     event.stopPropagation();
   },
+  onMouseEnterHandler: function(){
+    this.setState({mouseOver: true});
+  },
+  onMouseLeaveHandler: function(){
+    this.setState({mouseOver: false});
+  },
   render: function(){
     var selected = this.state.selected;
+    var mouseOver = this.state.mouseOver;
     return(
       <g
         ref="svgGroup"
         className="nodo"
         onClick={this.onClickHandler}
-        onMouseDown={this.onMouseDownHandler}>
-        <circle r={this.props.radio}
+        onMouseDown={this.onMouseDownHandler}
+        onMouseEnter={this.onMouseEnterHandler}
+        onMouseLeave={this.onMouseLeaveHandler}>
+        <circle r={mouseOver?this.props.radioOnMouseOver:this.props.radio}
                 fill="white"
-                stroke={selected?"blue":"black"}
+                stroke={(selected || mouseOver)?"blue":"black"}
                 strokeWidth={3}
                 cx={this.state.position.x}
                 cy={this.state.position.y}/>

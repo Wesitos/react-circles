@@ -123,6 +123,9 @@ var Workplace = React.createClass({
     var svg = this.refs.svg_element.getDOMNode();
     var rect = svg.getClientRects()[0];
     this.clientOrigin = {x:rect.left, y: rect.top};
+  // Hay que actualizar el origin de coordenadas al scrollear
+  onScrollHandler: function(){
+    this.setClientOrigin();
   },
   menuCallback: function(event){
     this.setState({clickMode: event.target.value});
@@ -178,6 +181,10 @@ var Workplace = React.createClass({
   },
   componentDidMount: function(){
     this.setClientOrigin();
+    window.addEventListener("scroll", this.onScrollHandler);
+  },
+  componentWillUnmount: function(){
+    window.removeEventListener("scroll", this.onScrollHandler);
   },
 });
 

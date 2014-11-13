@@ -220,7 +220,7 @@ var Nodo = React.createClass({
   },
   moveToFront: function(){
     var DOMNode = this.refs.svgGroup.getDOMNode();
-    DOMNode.ownerSVGElement.appendChild(DOMNode);
+    DOMNode.parentNode.appendChild(DOMNode);
   },
   onClickHandler: function(event){
     //Evitamos que el evento se propague al WorkPlace

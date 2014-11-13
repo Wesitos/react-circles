@@ -56,7 +56,9 @@ var Workplace = React.createClass({
           this.createLink(selectedList[0], selectedList[1]);
           this.selectedList = [];
 
-          this.state.selected.setState({selected:false});
+          if (this.state.selected){
+            this.state.selected.setState({selected:false});
+          };
     }
     else{
       this.defaultCallback(element);

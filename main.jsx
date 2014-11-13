@@ -177,8 +177,10 @@ var Workplace = React.createClass({
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}
              onClick={onClick}>
-          {linksElements}
-          {children}
+          <g id="objetos">
+            {linksElements}
+            {children}
+          </g>
         </svg>
       </div>
     );

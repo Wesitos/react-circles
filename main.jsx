@@ -14,13 +14,13 @@ var Workplace = React.createClass({
   onKeyPressHandler: function(event){
     var mode = "";
     switch(event.key){
-        case 'c':
+      case 'c':
         mode = "create";
         break;
-        case 'm':
+      case 'm':
         mode = "move";
         break;
-        case 'l':
+      case 'l':
         mode = "link";
     };
     if (mode){

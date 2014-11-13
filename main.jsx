@@ -252,6 +252,7 @@ var Link = React.createClass({
             strokeWidth={2}/>
     );
   },
+  // Mandalo al fondo
   componentDidMount: function(){
     var lineNode = this.refs.line.getDOMNode();
     lineNode.ownerSVGElement.insertBefore(lineNode, lineNode.ownerSVGElement.firstChild);

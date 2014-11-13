@@ -177,8 +177,8 @@ var Workplace = React.createClass({
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}
              onClick={onClick}>
-          {children}
           {linksElements}
+          {children}
         </svg>
       </div>
     );
@@ -263,11 +263,6 @@ var Link = React.createClass({
             stroke="black"
             strokeWidth={2}/>
     );
-  },
-  // Mandalo al fondo
-  componentDidMount: function(){
-    var lineNode = this.refs.line.getDOMNode();
-    lineNode.ownerSVGElement.insertBefore(lineNode, lineNode.ownerSVGElement.firstChild);
   },
 });
 

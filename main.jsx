@@ -8,8 +8,14 @@ var Workplace = React.createClass({
       },
       clickMode: "move", // 0: move, 1: create, 2: link
       links: [],
+      translate: [0,0],
     };
   },
+  // Variables locales que no intervienen directamente en el renderizado
+  clientOrigin: {x:0, y:0},
+  mouseDownClient: {x:0, y:0},
+  lastTranslate: [0,0],
+  // -----
   onKeyPressHandler: function(event){
     var mode = "";
     switch(event.key){
@@ -34,10 +40,11 @@ var Workplace = React.createClass({
     return new_nodo;
   },
   createOnClick: function(event){
+    var translate = this.state.translate;
     this.creaNodo({
       position: {
-        x: event.clientX - this.clientOrigin.x,
-        y: event.clientY - this.clientOrigin.y,
+        x: event.clientX - this.clientOrigin.x - translate[0],
+        y: event.clientY - this.clientOrigin.y - translate[1],
       }
     });
   },
@@ -93,18 +100,42 @@ var Workplace = React.createClass({
     });
   },
   onMouseMoveHandler: function(event){
-    if (this.state.mouseDown && this.state.clickMode==="move" && this.state.selected){
-      var element = this.state.selected;
-      element.setState({
-        position: {
-          x: event.clientX - this.clientOrigin.x,
-          y: event.clientY - this.clientOrigin.y,
-        },
-      });
-      this.forceUpdate();
-    }
+    if (this.state.mouseDown ){
+      switch(this.state.clickMode){
+        case "move":
+          if ( this.state.selected !== undefined){
+            var element = this.state.selected;
+            var translate = this.state.translate;
+            element.setState({
+              position: {
+                x: event.clientX - this.clientOrigin.x - translate[0],
+                y: event.clientY - this.clientOrigin.y - translate[1],
+              },
+            });
+            this.forceUpdate();
+          }
+          else{
+            var clientX = event.clientX;
+            var clientY = event.clientY;
+
+            var deltaX = this.mouseDownClient.x - clientX;
+            var deltaY = this.mouseDownClient.y - clientY;
+            var x = this.lastTranslate[0] - deltaX;
+            var y = this.lastTranslate[1] - deltaY;
+            this.setState({
+              translate: [x,y],
+            });
+          };
+          break;
+        case "create":
+        case "link":
+      };
+    };
   },
   onMouseDownHandler: function(event){
+    // Almacenamos la posicion del mouse
+    this.mouseDownClient = {x:event.clientX, y: event.clientY};
+    this.lastTranslate = this.state.translate;
     if (this.state.selected){
       this.state.selected.setState({selected:false});
     };
@@ -112,6 +143,7 @@ var Workplace = React.createClass({
       selected: undefined,
       mouseDown: true
     });
+
   },
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
@@ -133,28 +165,31 @@ var Workplace = React.createClass({
   },
   menuCallback: function(event){
     this.setState({clickMode: event.target.value});
-      if (event.target.value === "link"){
-        this.selectedList = [];
-        this.setState({nodo: {selectedCallback: this. linkCallback}});
-      }
+    if (event.target.value === "link"){
+      this.selectedList = [];
+      this.setState({nodo: {selectedCallback: this. linkCallback}});
+    }
     else{
       this.setState({nodo:{selectedCallback: this. defaultCallback}});
     };
   },
   render: function(){
     var nodo_props = this.state.nodo;
+    var translate = this.state.translate;
+    var transform = "translate(" + translate[0] + ',' + translate[1] + ")";
     var children = this.state.children.map(function(child){
       return React.addons.cloneWithProps(child, nodo_props);
     });
+    // Onclick callback
     var onClick;
     switch(this.state.clickMode){
-        case "move":
+      case "move":
         onClick = this.moveOnClick;
         break;
-        case "create":
+      case "create":
         onClick = this.createOnClick;
         break;
-        case "link":
+      case "link":
         onClick = undefined;
     };
     var links = this.state.links;
@@ -177,7 +212,8 @@ var Workplace = React.createClass({
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}
              onClick={onClick}>
-          <g id="objetos">
+          <g id="objetos"
+             transform={transform}>
             {linksElements}
             {children}
           </g>

@@ -119,10 +119,13 @@ var Workplace = React.createClass({
     // No seleccionamos ningun elemento
     this.setState({selected:undefined});
   },
+  // Define la diferencia entre el origin de coordenadas en el "cliente"
+  // y el SVG
   setClientOrigin: function(){
     var svg = this.refs.svg_element.getDOMNode();
-    var rect = svg.getClientRects()[0];
-    this.clientOrigin = {x:rect.left, y: rect.top};
+    var clientRect = svg.getBoundingClientRect();
+    this.clientOrigin = {x:clientRect.left, y: clientRect.top};
+  },
   // Hay que actualizar el origin de coordenadas al scrollear
   onScrollHandler: function(){
     this.setClientOrigin();

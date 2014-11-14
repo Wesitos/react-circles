@@ -50,7 +50,21 @@ var Workplace = React.createClass({
     });
   },
   createLink: function(nodo1, nodo2){
-    this.setState({links: this.state.links.concat([[nodo1,nodo2]])});
+    var id1 = nodo1.props.id;
+    var id2 = nodo2.props.id;
+    var n = this.nodoId.length;
+    if (parseInt(id1.slice(n)) > parseInt(id2.slice(n)) ){
+      nodo2 = [nodo1, nodo1 = nodo2][0]; //Intercambialos
+      id2 = [id1, id1 = id2][0];
+    };
+    var links = this.state.links;
+    // Esto elimina cualquier link igual al que queremos crear
+    links = links.filter(function(link){
+      return link.map(function(l){ return l.props.id;}).
+                               reduce(function(x,y){return x+y;})!=id1+id2;
+    });
+    console.log("linkList", links)
+    this.setState({links: links.concat([[nodo1,nodo2]])});
   },
   linkCallback: function(element){
     var selectedList = this.selectedList;

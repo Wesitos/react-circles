@@ -103,6 +103,7 @@ var Workplace = React.createClass({
     if (this.state.mouseDown ){
       switch(this.state.clickMode){
         case "move":
+        case "link":
           if ( this.state.selected !== undefined){
             var element = this.state.selected;
             var translate = this.state.translate;

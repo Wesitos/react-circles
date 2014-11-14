@@ -15,6 +15,7 @@ var Workplace = React.createClass({
   clientOrigin: {x:0, y:0},
   mouseDownClient: {x:0, y:0},
   lastTranslate: [0,0],
+  nodoId: "nodo-",
   // -----
   onKeyPressHandler: function(event){
     var mode = "";
@@ -34,7 +35,7 @@ var Workplace = React.createClass({
   },
   creaNodo: function(props_nodo){
     var new_nodo = <Nodo {... props_nodo}
-                         key={this.state.children.length}/>;
+                         id={this.nodoId + this.state.children.length}/>;
     var newChildrenState = this.state.children.concat(new_nodo);
     this.setState({children: newChildrenState});
     return new_nodo;
@@ -85,14 +86,14 @@ var Workplace = React.createClass({
     var childrenState;
     if (Array.isArray(this.props.children)){
       childrenState = this.props.children.map( function(child){
-        return React.addons.clonewithProps(child,{key: i++});
+        return React.addons.clonewithProps(child,{id: this.nodoId + i++});
       });
     }
     else if(this.props.children === undefined){
       childrenState = [];
     }
     else{
-      childrenState = [React.addons.cloneWithProps(this.props.children, {key: 0})];
+      childrenState = [React.addons.cloneWithProps(this.props.children, {id: this.nodoId + 0})];
     };
 
     this.setState({
@@ -194,8 +195,9 @@ var Workplace = React.createClass({
         onClick = undefined;
     };
     var links = this.state.links;
+    var i = 0;
     var linksElements = links.map(function(item){
-      return <Link pos1={item[0].state.position}  pos2={item[1].state.position}/>;
+      return <Link key={"link-"+ i++} pos1={item[0].state.position}  pos2={item[1].state.position}/>;
     });
 
     return(
@@ -216,7 +218,9 @@ var Workplace = React.createClass({
           <g id="objetos"
              transform={transform}>
             {linksElements}
-            {children}
+            {children.map(function(child){
+              return React.addons.cloneWithProps(child, {key:child.props.id})
+             })}
           </g>
         </svg>
       </div>
@@ -274,6 +278,7 @@ var Nodo = React.createClass({
     var mouseOver = this.state.mouseOver;
     return(
       <g
+        id={this.props.id}
         ref="svgGroup"
         className="nodo"
         onClick={this.onClickHandler}

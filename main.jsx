@@ -144,7 +144,6 @@ var Workplace = React.createClass({
           };
           break;
         case "create":
-        case "link":
       };
     };
   },

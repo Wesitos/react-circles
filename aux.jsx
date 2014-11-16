@@ -38,7 +38,8 @@ var Workplace = React.createClass({
   idName: "nodo-",
   originCoords: {x:0,y:0},
   modeList: [
-    {value: "move", name: "Mover Nodos"}
+    {value: "move", name: "Mover Nodos"},
+    {value: "delete", name: "Eliminar Nodos"}
   ],
   mouseDownClient: {x:0, y:0},
   lastTranslate: [0,0],
@@ -103,29 +104,45 @@ var Workplace = React.createClass({
           }};
         break;
     };
-
   },
   
   nodoMouseDownCallback: function(id){
     var self = this;
-    var newData = this.state.data.map( function(child){
-      var selectedId = self.state.selectedId;
-      if ((id != selectedId) &&(child.id === selectedId)){
-        return React.addons.update(child, {selected: {$set: false}});
-      }
-      if (child.id === id ){
-        return  React.addons.update(child, {selected: {$set: true}});
-      }
+    var prevSelectedId = this.state.selectedId;
+    // Deseleccionamos el nodo anterior
+    var newData = this.state.data.map(function(child){
+      if( child.id === prevSelectedId){
+        return React.addons.update(child, {selected: {$set: false}});}
       else{
-        return child;
+        return child;}});
+
+      switch(this.state.mode){
+        case "move":
+          // Seleccionamos el nuevo nodo
+          newData = newData.map( function(child){
+            if (child.id === id ){
+              return  React.addons.update(child, {selected: {$set: true}});}
+            else{
+              return child;};});
+          break;
+        case "delete":
+          // eliminamos el nuevo nodo
+          newData = this.state.data.filter(function(child){
+            if (child.id === id){
+              return false;}
+            else{
+              return true;}
+          });
+          // el nuevo id es undefined
+          id = undefined;
+          break;
       };
-    });
-    this.setState({
-      selectedId: id,
-      mouseDown: true,
-      data: newData
-    });
-  },
+      this.setState({
+        selectedId: id,
+        mouseDown: true,
+        data: newData
+      });
+    },
   
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
@@ -139,7 +156,7 @@ var Workplace = React.createClass({
 
   menuOnChangeHandler: function(event){
     var newMode = event.target.value;
-    this.setState({clickMode: newMode});
+    this.setState({mode: newMode});
     switch(newMode){
       case "move":
         break;

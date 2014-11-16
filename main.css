@@ -2,7 +2,7 @@ svg{
     border:1px solid;
 }
 
-svg:focus{
+#container>div:focus{
     outline: none;
 }
 

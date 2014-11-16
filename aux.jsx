@@ -83,10 +83,11 @@ var Workplace = React.createClass({
   nodoMouseDownCallback: function(id){
     var self = this;
     var newData = this.state.data.map( function(child){
-      if (self.state.selectedId && (child.id === self.state.selectedId)){
+      var selectedId = self.state.selectedId;
+      if ((id != selectedId) &&(child.id === selectedId)){
         return React.addons.update(child, {selected: {$set: false}});
       }
-      else if (child.id === id ){
+      if (child.id === id ){
         return  React.addons.update(child, {selected: {$set: true}});
       }
       else{

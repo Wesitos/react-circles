@@ -108,6 +108,10 @@ var Workplace = React.createClass({
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
   },
+  onMouseDownHandler: function(){
+    this.nodoMouseDownCallback(undefined);
+  },
+
   menuOnChangeHandler: function(event){
     var newMode = event.target.value;
     this.setState({clickMode: newMode});
@@ -131,6 +135,7 @@ var Workplace = React.createClass({
         <Indicator mousePos={this.state.mousePos} />
         <svg width="100%" height="100%"
              ref="svgElement"
+             onMouseDown={this.onMouseDownHandler}
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}>
           { nodos }

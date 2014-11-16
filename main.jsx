@@ -83,6 +83,9 @@ var Workplace = React.createClass({
     var selectedId = this.state.selectedId;
     switch(this.state.mode){
       case "move":
+      case "add":
+      case "link":
+      case "delete":
         if( this.state.mouseDown){
           if (selectedId === undefined){
             var clientX = event.clientX;
@@ -117,6 +120,8 @@ var Workplace = React.createClass({
     };
   },
   nodoMouseDownCallback: function(id){
+    this.lastTranslate = this.state.translate;
+    this.mouseDownClient = {x:event.clientX, y: event.clientY};
     var self = this;
     var prevSelectedId = this.state.selectedId;
     // Deseleccionamos el nodo anterior
@@ -193,8 +198,6 @@ var Workplace = React.createClass({
   },
   onMouseDownHandler: function(event){
     // Almacenamos la posicion del mouse
-    this.mouseDownClient = {x:event.clientX, y: event.clientY};
-    this.lastTranslate = this.state.translate;
     this.nodoMouseDownCallback(undefined);
   },
   //

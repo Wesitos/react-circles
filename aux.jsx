@@ -161,6 +161,7 @@ var Nodo = React.createClass({
   },
   onMouseDownHandler: function(event){
     this.props.mouseDownCallback(this.props.id);
+    event.stopPropagation();
   },
 
   render: function(){

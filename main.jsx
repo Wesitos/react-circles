@@ -155,7 +155,7 @@ var Workplace = React.createClass({
               // Los intercambiamos
               id2 = [id1, id1 = id2][0];
             };
-            links = this.state.links.filter(function(link){
+            var links = this.state.links.filter(function(link){
               return  !((link[0]===id1) && (link[1] === id2));
             });
             newLinks = links.concat({id1: id1, id2: id2});

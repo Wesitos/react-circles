@@ -205,15 +205,21 @@ var Workplace = React.createClass({
     var mode = "";
     switch(event.key){
       case 'm':
+      case 'M':
         mode = "move";
         break;
       case 'c':
+      case 'C':
+      case 'a':
+      case 'A':
         mode = "add";
         break;
       case 'd':
+      case 'D':
         mode = "delete";
         break;
       case 'l':
+      case 'L':
         mode = "link";
         break;
     };

@@ -186,15 +186,20 @@ var Nodo = React.createClass({
       selected: React.PropTypes.bool
     };
   },
-
   getDefaultProps: function(){
     return {
       radio: 20,
       selected: false
     };
   },
+  moveToFront: function(){
+    var DOMNode = this.refs.svgGroup.getDOMNode();
+    DOMNode.parentNode.appendChild(DOMNode);
+  },
+
   onMouseDownHandler: function(event){
     this.props.mouseDownCallback(this.props.id);
+    this.moveToFront();
     event.stopPropagation();
   },
 
@@ -204,6 +209,7 @@ var Nodo = React.createClass({
     var rad = this.props.radio;
     return (
       <g
+        ref="svgGroup"
         onMouseDown={this.onMouseDownHandler}>
         <circle cx={x} cy={y} r={rad}
                 fill="white"

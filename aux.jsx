@@ -167,7 +167,15 @@ var Workplace = React.createClass({
     var self = this;
     var translate = this.state.translate;
     var transform = "translate(" + translate[0] + ',' + translate[1] + ")";
-    var nodos = this.state.data.map(function(child){
+    var nodosProps = this.state.data;
+    var nodosSelected = nodosProps.filter(function(child){
+      return (child.selected === true);
+    });
+    var nodosUnselected = nodosProps.filter(function(child){
+      return (child.selected !== true);
+    });
+    nodosProps = nodosUnselected.concat( nodosSelected);
+    var nodos = nodosProps.map(function(child){
       return <Nodo {... child}
                    mouseDownCallback={self.nodoMouseDownCallback}
                    key={child.id} />;

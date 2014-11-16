@@ -30,6 +30,7 @@ var Workplace = React.createClass({
     return{
       mousePos: {x:0, y:0},
       selectedId: undefined,
+      links: [],
       mode: "move",
       translate: [0,0]
     };
@@ -117,7 +118,7 @@ var Workplace = React.createClass({
         return React.addons.update(child, {selected: {$set: false}});}
       else{
         return child;}});
-
+    var newLinks = this.state.links;
       switch(this.state.mode){
         case "move":
           // Seleccionamos el nuevo nodo
@@ -127,9 +128,6 @@ var Workplace = React.createClass({
             else{
               return child;};});
           break;
-        case "delete":
-          // eliminamos el nuevo nodo
-          newData = this.state.data.filter(function(child){
         case "add":
           var newX = this.mouseDownClient.x - this.originCoords.x - this.state.translate[0];
           var newY = this.mouseDownClient.y - this.originCoords.y - this.state.translate[1];
@@ -160,10 +158,17 @@ var Workplace = React.createClass({
             id = undefined;
           };
           break;
+        case "delete":
+          // eliminamos el nodo
+          newData = this.state.data.filter(function(child){
             if (child.id === id){
               return false;}
             else{
               return true;}
+          });
+          // Eliminamos sus links
+          newLinks = newLinks.filter(function(link){
+            return !((link.id1 === id) || (link.id2 === id));
           });
           // el nuevo id es undefined
           id = undefined;
@@ -172,7 +177,8 @@ var Workplace = React.createClass({
       this.setState({
         selectedId: id,
         mouseDown: true,
-        data: newData
+        data: newData,
+        links: newLinks
       });
     },
   
@@ -191,6 +197,9 @@ var Workplace = React.createClass({
     this.setState({mode: newMode});
     switch(newMode){
       case "move":
+        break;
+      case "link":
+        this.setState({selectedId: undefined});
         break;
     };
   },
@@ -212,7 +221,16 @@ var Workplace = React.createClass({
                    mouseDownCallback={self.nodoMouseDownCallback}
                    key={child.id} />;
     });
-
+    var linkList = this.state.links;
+    var links = linkList.map(function(link){
+      var pos1 = nodosProps.filter(function(child){
+        return child.id === link.id1;
+      })[0].position;
+      var pos2 = nodosProps.filter(function(child){
+        return child.id === link.id2;
+      })[0].position;
+      return <Link pos1={pos1} pos2={pos2}/>;
+    });
     return (
       <div>
         <Menu listaOptions={this.modeList} handler={this.menuOnChangeHandler}/>
@@ -223,6 +241,7 @@ var Workplace = React.createClass({
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}>
           <g transform={transform}>
+            { links }
             { nodos }
           </g>
         </svg>
@@ -268,6 +287,20 @@ var Nodo = React.createClass({
                 stroke={this.props.selected?"blue":"black"}
                 strokeWidth={3} />
       </g>
+    );
+  }
+});
+
+var Link = React.createClass({
+  render: function(){
+    var pos1 = this.props.pos1;
+    var pos2 = this.props.pos2;
+    return(
+      <line x1={pos1.x} y1={pos1.y}
+            x2={pos2.x} y2={pos2.y}
+            ref="line"
+            stroke="black"
+            strokeWidth={2}/>
     );
   }
 });

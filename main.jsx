@@ -209,12 +209,14 @@ var Workplace = React.createClass({
     var translate = this.state.translate;
     var transform = "translate(" + translate[0] + ',' + translate[1] + ")";
     var nodosProps = this.state.data;
+    // Esto es para mandar el nodo seleccionado al frente
     var nodosSelected = nodosProps.filter(function(child){
       return (child.selected === true);
     });
     var nodosUnselected = nodosProps.filter(function(child){
       return (child.selected !== true);
     });
+    // -----
     nodosProps = nodosUnselected.concat( nodosSelected);
     var nodos = nodosProps.map(function(child){
       return <Nodo {... child}

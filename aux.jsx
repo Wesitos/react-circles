@@ -156,7 +156,10 @@ var Nodo = React.createClass({
     return (
       <g
         onMouseDown={this.onMouseDownHandler}>
-        <circle cx={x} cy={y} r={rad} />
+        <circle cx={x} cy={y} r={rad}
+                fill="white"
+                stroke={this.props.selected?"blue":"black"}
+                strokeWidth={3} />
       </g>
     );
   }

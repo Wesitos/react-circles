@@ -28,7 +28,8 @@ var Workplace = React.createClass({
   },
   getInitialState: function(){
     return{
-      mousePos: {x:0, y:0}
+      mousePos: {x:0, y:0},
+      selectedId: undefined
     };
   },
   nodoNum: 0,
@@ -49,7 +50,7 @@ var Workplace = React.createClass({
     var self = this;
     var newData = this.props.data.map(function(child){
       var id = self.idName + (self.nodoNum++);
-      return React.addons.update(child, {$merge: {id: id}});
+      return React.addons.update(child, {id: {$set: id}});
     });
     this.setState({data: newData});
   },
@@ -66,8 +67,8 @@ var Workplace = React.createClass({
       var newY = event.clientY - this.originCoords.y;
       var newData = this.state.data.map( function(child){
         if (child.id === selectedId){
-          return React.addons.update(child, {$merge: {
-            position: {
+          return React.addons.update(child, {position: {
+            $set: {
               x: newX,
               y: newY
             }}});
@@ -80,9 +81,22 @@ var Workplace = React.createClass({
     }},
   
   nodoMouseDownCallback: function(id){
+    var self = this;
+    var newData = this.state.data.map( function(child){
+      if (self.state.selectedId && (child.id === self.state.selectedId)){
+        return React.addons.update(child, {selected: {$set: false}});
+      }
+      else if (child.id === id ){
+        return  React.addons.update(child, {selected: {$set: true}});
+      }
+      else{
+        return child;
+      };
+    });
     this.setState({
       selectedId: id,
-      mouseDown: true
+      mouseDown: true,
+      data: newData
     });
   },
   
@@ -120,13 +134,15 @@ var Nodo = React.createClass({
         x: React.PropTypes.number,
         y: React.PropTypes.number
       }).isRequired,
-      id: React.PropTypes.string.isRequired
+      id: React.PropTypes.string.isRequired,
+      selected: React.PropTypes.bool
     };
   },
 
   getDefaultProps: function(){
     return {
-      radio: 20
+      radio: 20,
+      selected: false
     };
   },
   onMouseDownHandler: function(event){

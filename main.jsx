@@ -185,7 +185,7 @@ var Workplace = React.createClass({
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
   },
-  onMouseDownHandler: function(){
+  onMouseDownHandler: function(event){
     // Almacenamos la posicion del mouse
     this.mouseDownClient = {x:event.clientX, y: event.clientY};
     this.lastTranslate = this.state.translate;

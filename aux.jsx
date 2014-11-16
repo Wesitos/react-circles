@@ -166,6 +166,30 @@ var Nodo = React.createClass({
   }
 });
 
+var Menu = React.createClass({
+  propTypes: function(){
+    return{
+      listaOptions: React.Proptypes.arrayOf(
+        React.PropTypes.shape({
+          value: React.PropTypes.string,
+          name: React.PropTypes.string
+        })
+      ).isRequired,
+      handler: React.PropTypes.func.isRequired
+    };
+  },
+  render: function(){
+    var listaOptions = this.props.listaOptions;
+    return(
+      <select onChange={this.props.handler}>
+        {listaOptions.map(function(child){
+          return <option value={child.value}>{child.name}</option>;
+         })}
+      </select>
+    );
+  }
+});
+
 var Indicator = React.createClass({
   render: function(){
     return(

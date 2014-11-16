@@ -39,7 +39,9 @@ var Workplace = React.createClass({
   originCoords: {x:0,y:0},
   modeList: [
     {value: "move", name: "Mover Nodos"},
-    {value: "delete", name: "Eliminar Nodos"}
+    {value: "add", name: "Agregar Nodos"},
+    {value: "delete", name: "Eliminar Nodos"},
+    {value: "link", name: "Vincular Nodos"}
   ],
   mouseDownClient: {x:0, y:0},
   lastTranslate: [0,0],
@@ -128,6 +130,36 @@ var Workplace = React.createClass({
         case "delete":
           // eliminamos el nuevo nodo
           newData = this.state.data.filter(function(child){
+        case "add":
+          var newX = this.mouseDownClient.x - this.originCoords.x - this.state.translate[0];
+          var newY = this.mouseDownClient.y - this.originCoords.y - this.state.translate[1];
+          var newId = this.idName + this.nodoNum++;
+          newData = newData.concat(
+            {position: {x: newX,
+                        y: newY},
+             selected: true,
+             id: newId
+            }
+          );
+          // Seleccionamos el nuevo nodo
+          id = newId;
+          break;
+        case "link":
+          if (prevSelectedId && id && (id !== prevSelectedId))
+          {
+            var id1 = prevSelectedId;
+            var id2 = id;
+            if (id2 < id1){
+              // Los intercambiamos
+              id2 = [id1, id1 = id2][0];
+            };
+            links = this.state.links.filter(function(link){
+              return  !((link[0]===id1) && (link[1] === id2));
+            });
+            newLinks = links.concat({id1: id1, id2: id2});
+            id = undefined;
+          };
+          break;
             if (child.id === id){
               return false;}
             else{

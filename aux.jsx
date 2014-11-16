@@ -30,7 +30,8 @@ var Workplace = React.createClass({
     return{
       mousePos: {x:0, y:0},
       selectedId: undefined,
-      mode: "move"
+      mode: "move",
+      translate: [0,0]
     };
   },
   nodoNum: 0,
@@ -39,6 +40,8 @@ var Workplace = React.createClass({
   modeList: [
     {value: "move", name: "Mover Nodos"}
   ],
+  mouseDownClient: {x:0, y:0},
+  lastTranslate: [0,0],
   //-----
   setOriginCoords: function(){
     var svgNode = this.refs.svgElement.getDOMNode();
@@ -66,23 +69,42 @@ var Workplace = React.createClass({
                               y:event.clientY - originY}});
     //
     var selectedId = this.state.selectedId;
-    if (this.state.mouseDown && selectedId){
-      var newX = event.clientX - this.originCoords.x;
-      var newY = event.clientY - this.originCoords.y;
-      var newData = this.state.data.map( function(child){
-        if (child.id === selectedId){
-          return React.addons.update(child, {position: {
-            $set: {
-              x: newX,
-              y: newY
-            }}});
-        }
-        else{
-          return child;
-        };
-      });
-      this.setState({data: newData});
-    }},
+    switch(this.state.mode){
+      case "move":
+        if( this.state.mouseDown){
+          if (selectedId === undefined){
+            var clientX = event.clientX;
+            var clientY = event.clientY;
+
+            var deltaX = this.mouseDownClient.x - clientX;
+            var deltaY = this.mouseDownClient.y - clientY;
+            var x = this.lastTranslate[0] - deltaX;
+            var y = this.lastTranslate[1] - deltaY;
+            this.setState({
+              translate: [x,y]
+            });
+          }
+          else {
+            var translate = this.state.translate;
+            var newX = event.clientX - this.originCoords.x - translate[0];
+            var newY = event.clientY - this.originCoords.y - translate[1];
+            var newData = this.state.data.map( function(child){
+              if (child.id === selectedId){
+                return React.addons.update(child, {position: {
+                  $set: {
+                    x: newX,
+                    y: newY
+                  }}});
+              }
+              else{
+                return child;
+              };});
+            this.setState({data: newData});
+          }};
+        break;
+    };
+
+  },
   
   nodoMouseDownCallback: function(id){
     var self = this;
@@ -109,6 +131,9 @@ var Workplace = React.createClass({
     this.setState({mouseDown: false});
   },
   onMouseDownHandler: function(){
+    // Almacenamos la posicion del mouse
+    this.mouseDownClient = {x:event.clientX, y: event.clientY};
+    this.lastTranslate = this.state.translate;
     this.nodoMouseDownCallback(undefined);
   },
 
@@ -123,6 +148,8 @@ var Workplace = React.createClass({
 
   render: function(){
     var self = this;
+    var translate = this.state.translate;
+    var transform = "translate(" + translate[0] + ',' + translate[1] + ")";
     var nodos = this.state.data.map(function(child){
       return <Nodo {... child}
                    mouseDownCallback={self.nodoMouseDownCallback}
@@ -138,7 +165,9 @@ var Workplace = React.createClass({
              onMouseDown={this.onMouseDownHandler}
              onMouseUp={this.onMouseUpHandler}
              onMouseMove={this.onMouseMoveHandler}>
-          { nodos }
+          <g transform={transform}>
+            { nodos }
+          </g>
         </svg>
       </div>
     );

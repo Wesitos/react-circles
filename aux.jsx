@@ -108,6 +108,14 @@ var Workplace = React.createClass({
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
   },
+  menuOnChangeHandler: function(event){
+    var newMode = event.target.value;
+    this.setState({clickMode: newMode});
+    switch(newMode){
+      case "move":
+        break;
+    };
+  },
 
   render: function(){
     var self = this;
@@ -119,6 +127,7 @@ var Workplace = React.createClass({
 
     return (
       <div>
+        <Menu listaOptions={this.modeList} handler={this.menuOnChangeHandler}/>
         <Indicator mousePos={this.state.mousePos} />
         <svg width="100%" height="100%"
              ref="svgElement"

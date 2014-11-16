@@ -53,13 +53,11 @@ var Workplace = React.createClass({
     this.originCoords = {x: clientRect.left, y: clientRect.top};
   },
 
+  // React render callbacks
   componentDidMount: function(){
     this.setOriginCoords();
     // Es necesario hacer esto para el scroll global
     window.addEventListener("scroll", this.onScrollHandler);
-  },
-  componentWillUnmount: function(){
-    windows.removeEventListener(this.onScrollHandler);
   },
   componentWillMount: function(){
     var self = this;
@@ -69,6 +67,12 @@ var Workplace = React.createClass({
     });
     this.setState({data: newData});
   },
+  componentWillUnmount: function(){
+    windows.removeEventListener(this.onScrollHandler);
+  },
+  //
+
+  // Mouse Events
   onMouseMoveHandler: function(event){
     // Set MousePosition
     var originX = this.originCoords.x;
@@ -112,7 +116,6 @@ var Workplace = React.createClass({
         break;
     };
   },
-  
   nodoMouseDownCallback: function(id){
     var self = this;
     var prevSelectedId = this.state.selectedId;
@@ -185,7 +188,6 @@ var Workplace = React.createClass({
         links: newLinks
       });
     },
-  
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
   },
@@ -195,11 +197,12 @@ var Workplace = React.createClass({
     this.lastTranslate = this.state.translate;
     this.nodoMouseDownCallback(undefined);
   },
+  //
   onScrollHandler: function(event){
     console.log("scroll");
     this.setOriginCoords();
   },
-
+  // Callback del menu de seleccion de modo
   menuOnChangeHandler: function(event){
     var newMode = event.target.value;
     this.setState({mode: newMode});

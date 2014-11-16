@@ -183,7 +183,11 @@ var Menu = React.createClass({
     return(
       <select onChange={this.props.handler}>
         {listaOptions.map(function(child){
-          return <option value={child.value}>{child.name}</option>;
+          return (
+            <option value={child.value} key={child.value}>
+            {child.name}
+            </option>
+          );
          })}
       </select>
     );

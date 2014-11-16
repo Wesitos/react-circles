@@ -209,15 +209,10 @@ var Nodo = React.createClass({
       selected: false
     };
   },
-  moveToFront: function(){
-    var DOMNode = this.refs.svgGroup.getDOMNode();
-    DOMNode.parentNode.appendChild(DOMNode);
-  },
 
   onMouseDownHandler: function(event){
-    this.props.mouseDownCallback(this.props.id);
-    this.moveToFront();
     event.stopPropagation();
+    this.props.mouseDownCallback(this.props.id);
   },
 
   render: function(){

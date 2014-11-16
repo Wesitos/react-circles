@@ -29,13 +29,17 @@ var Workplace = React.createClass({
   getInitialState: function(){
     return{
       mousePos: {x:0, y:0},
-      selectedId: undefined
+      selectedId: undefined,
+      mode: "move"
     };
   },
   nodoNum: 0,
   idName: "nodo-",
   originCoords: {x:0,y:0},
-
+  modeList: [
+    {value: "move", name: "Mover Nodos"}
+  ],
+  //-----
   setOriginCoords: function(){
     var svgNode = this.refs.svgElement.getDOMNode();
     var clientRect = svgNode.getBoundingClientRect();

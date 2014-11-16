@@ -131,68 +131,68 @@ var Workplace = React.createClass({
       else{
         return child;}});
     var newLinks = this.state.links;
-      switch(this.state.mode){
-        case "move":
-          // Seleccionamos el nuevo nodo
-          newData = newData.map( function(child){
-            if (child.id === id ){
-              return  React.addons.update(child, {selected: {$set: true}});}
-            else{
-              return child;};});
-          break;
-        case "add":
-          var newX = this.mouseDownClient.x - this.originCoords.x - this.state.translate[0];
-          var newY = this.mouseDownClient.y - this.originCoords.y - this.state.translate[1];
-          var newId = this.idName + this.nodoNum++;
-          newData = newData.concat(
-            {position: {x: newX,
-                        y: newY},
-             selected: true,
-             id: newId
-            }
-          );
-          // Seleccionamos el nuevo nodo
-          id = newId;
-          break;
-        case "link":
-          if (prevSelectedId && id && (id !== prevSelectedId))
-          {
-            var id1 = prevSelectedId;
-            var id2 = id;
-            if (id2 < id1){
-              // Los intercambiamos
-              id2 = [id1, id1 = id2][0];
-            };
-            var links = this.state.links.filter(function(link){
-              return  !((link[0]===id1) && (link[1] === id2));
-            });
-            newLinks = links.concat({id1: id1, id2: id2});
-            id = undefined;
+    switch(this.state.mode){
+      case "move":
+        // Seleccionamos el nuevo nodo
+        newData = newData.map( function(child){
+          if (child.id === id ){
+            return  React.addons.update(child, {selected: {$set: true}});}
+          else{
+            return child;};});
+        break;
+      case "add":
+        var newX = this.mouseDownClient.x - this.originCoords.x - this.state.translate[0];
+        var newY = this.mouseDownClient.y - this.originCoords.y - this.state.translate[1];
+        var newId = this.idName + this.nodoNum++;
+        newData = newData.concat(
+          {position: {x: newX,
+                      y: newY},
+           selected: true,
+           id: newId
+          }
+        );
+        // Seleccionamos el nuevo nodo
+        id = newId;
+        break;
+      case "link":
+        if (prevSelectedId && id && (id !== prevSelectedId))
+        {
+          var id1 = prevSelectedId;
+          var id2 = id;
+          if (id2 < id1){
+            // Los intercambiamos
+            id2 = [id1, id1 = id2][0];
           };
-          break;
-        case "delete":
-          // eliminamos el nodo
-          newData = this.state.data.filter(function(child){
-            if (child.id === id){
-              return false;}
-            else{
-              return true;}
+          var links = this.state.links.filter(function(link){
+            return  !((link[0]===id1) && (link[1] === id2));
           });
-          // Eliminamos sus links
-          newLinks = newLinks.filter(function(link){
-            return !((link.id1 === id) || (link.id2 === id));
-          });
-          // el nuevo id es undefined
+          newLinks = links.concat({id1: id1, id2: id2});
           id = undefined;
-          break;
-      };
-      this.setState({
-        selectedId: id,
-        mouseDown: true,
-        data: newData,
-        links: newLinks
-      });
-    },
+        };
+        break;
+      case "delete":
+        // eliminamos el nodo
+        newData = this.state.data.filter(function(child){
+          if (child.id === id){
+            return false;}
+          else{
+            return true;}
+        });
+        // Eliminamos sus links
+        newLinks = newLinks.filter(function(link){
+          return !((link.id1 === id) || (link.id2 === id));
+        });
+        // el nuevo id es undefined
+        id = undefined;
+        break;
+    };
+    this.setState({
+      selectedId: id,
+      mouseDown: true,
+      data: newData,
+      links: newLinks
+    });
+  },
   onMouseUpHandler: function(event){
     this.setState({mouseDown: false});
   },
@@ -222,7 +222,6 @@ var Workplace = React.createClass({
     };
   },
   onScrollHandler: function(event){
-    console.log("scroll");
     this.setOriginCoords();
   },
   // Callback del menu de seleccion de modo
@@ -380,7 +379,7 @@ var Indicator = React.createClass({
     return(
       <div id="indicator">
         <span>{this.props.mousePos.x}</span>,
-        <span>{this.props.mousePos.y}</span>
+      <span>{this.props.mousePos.y}</span>
       </div>
     );
   }

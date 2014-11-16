@@ -55,8 +55,12 @@ var Workplace = React.createClass({
 
   componentDidMount: function(){
     this.setOriginCoords();
+    // Es necesario hacer esto para el scroll global
+    window.addEventListener("scroll", this.onScrollHandler);
   },
-
+  componentWillUnmount: function(){
+    windows.removeEventListener(this.onScrollHandler);
+  },
   componentWillMount: function(){
     var self = this;
     var newData = this.props.data.map(function(child){
@@ -190,6 +194,10 @@ var Workplace = React.createClass({
     this.mouseDownClient = {x:event.clientX, y: event.clientY};
     this.lastTranslate = this.state.translate;
     this.nodoMouseDownCallback(undefined);
+  },
+  onScrollHandler: function(event){
+    console.log("scroll");
+    this.setOriginCoords();
   },
 
   menuOnChangeHandler: function(event){

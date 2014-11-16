@@ -169,7 +169,7 @@ var Nodo = React.createClass({
 var Indicator = React.createClass({
   render: function(){
     return(
-      <div>
+      <div id="indicator">
         <span>{this.props.mousePos.x}</span>,
         <span>{this.props.mousePos.y}</span>
       </div>

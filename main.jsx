@@ -198,6 +198,26 @@ var Workplace = React.createClass({
     this.nodoMouseDownCallback(undefined);
   },
   //
+  onKeyPressHandler: function(event){
+    var mode = "";
+    switch(event.key){
+      case 'm':
+        mode = "move";
+        break;
+      case 'c':
+        mode = "add";
+        break;
+      case 'd':
+        mode = "delete";
+        break;
+      case 'l':
+        mode = "link";
+        break;
+    };
+    if (mode){
+      this.menuOnChangeHandler({target: {value: mode}});
+    };
+  },
   onScrollHandler: function(event){
     console.log("scroll");
     this.setOriginCoords();
@@ -245,8 +265,12 @@ var Workplace = React.createClass({
       return <Link pos1={pos1} pos2={pos2}/>;
     });
     return (
-      <div>
-        <Menu listaOptions={this.modeList} handler={this.menuOnChangeHandler}/>
+      <div
+        tabIndex={1}
+        onKeyPress={this.onKeyPressHandler}>
+        <Menu listaOptions={this.modeList}
+              selected={this.state.mode}
+              handler={this.menuOnChangeHandler}/>
         <Indicator mousePos={this.state.mousePos} />
         <svg width="100%" height="100%"
              ref="svgElement"
@@ -333,7 +357,9 @@ var Menu = React.createClass({
   render: function(){
     var listaOptions = this.props.listaOptions;
     return(
-      <select onChange={this.props.handler}>
+      <select
+        value={this.props.selected}
+        onChange={this.props.handler}>
         {listaOptions.map(function(child){
           return (
             <option value={child.value} key={child.value}>

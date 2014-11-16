@@ -68,7 +68,7 @@ var Workplace = React.createClass({
     this.setState({data: newData});
   },
   componentWillUnmount: function(){
-    windows.removeEventListener(this.onScrollHandler);
+    window.removeEventListener(this.onScrollHandler);
   },
   //
 

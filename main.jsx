@@ -119,7 +119,7 @@ var Workplace = React.createClass({
         break;
     };
   },
-  nodoMouseDownCallback: function(id){
+  nodoMouseDownCallback: function(event, id){
     this.lastTranslate = this.state.translate;
     this.mouseDownClient = {x:event.clientX, y: event.clientY};
     var self = this;
@@ -198,7 +198,7 @@ var Workplace = React.createClass({
   },
   onMouseDownHandler: function(event){
     // Almacenamos la posicion del mouse
-    this.nodoMouseDownCallback(undefined);
+    this.nodoMouseDownCallback(event,undefined);
   },
   //
   onKeyPressHandler: function(event){
@@ -316,7 +316,7 @@ var Nodo = React.createClass({
 
   onMouseDownHandler: function(event){
     event.stopPropagation();
-    this.props.mouseDownCallback(this.props.id);
+    this.props.mouseDownCallback(event, this.props.id);
   },
 
   render: function(){
